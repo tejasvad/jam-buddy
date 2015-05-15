@@ -1,0 +1,213 @@
+<html>
+<head>
+	<title>Sound testing</title>
+	<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+	<script type="text/javascript" src="../js/lib/riffwave.js"></script>
+	<script type="text/javascript" src="../js/src.js"></script>
+	<script type="text/javascript" src="../js/musicCreator.js"></script>
+	<script type="text/javascript">
+		var playSound = function(){
+			var freq = document.getElementById("freq").value;
+			playFreq(freq);
+		};
+		var WHITE_WIDTH = 50,
+			BLACK_WIDTH = 30,
+			BLACK_OFFSET = WHITE_WIDTH - BLACK_WIDTH/2;
+		var keyMap = 'WBWBWWBWBWBW';
+		var playFreq = function(freq){
+			var factor = 1000/freq;
+			generateSound(factor);
+		};
+		var populateKeys = function(){
+			var wrapper = document.getElementById('keyBoard');
+			wrapper.appendChild(get5Set([103.83,110,116.54,123.47,130.81]));
+			wrapper.appendChild(get7Set([138.59,146.83,155.56,164.81,174.61,185,196]));
+			wrapper.appendChild(get5Set([207.65,220.00,233.08,246.94,261.60]));
+			wrapper.appendChild(get7Set([277.18,293.67,311.13,329.63,349.23,369.99,392.00]));
+			wrapper.appendChild(get5Set([415.30,440.00,466.16,493.88,523.25]));
+			wrapper.appendChild(get7Set([554.37,587.33,622.25,659.25,698.46,739.99,830.61]));
+		}
+		var get5Set = function(freqArray){
+			var set5 = document.createElement('div');
+			set5.setAttribute('class','set5');
+			set5.style.width = (3*WHITE_WIDTH) + 'px';
+			set5.appendChild(getWhite(0, freqArray[0]));
+			set5.appendChild(getBlack(BLACK_OFFSET, freqArray[1]));
+			set5.appendChild(getWhite(WHITE_WIDTH, freqArray[2]));
+			set5.appendChild(getBlack((WHITE_WIDTH + BLACK_OFFSET), freqArray[3]));
+			set5.appendChild(getWhite(2*WHITE_WIDTH, freqArray[4]));
+			return set5;
+		}
+		var get7Set = function(freqArray){
+			var set7 = document.createElement('div');
+			set7.setAttribute('class','set7');
+			set7.style.width = (4*WHITE_WIDTH) + 'px';
+			set7.appendChild(getWhite(0, freqArray[0]));
+			set7.appendChild(getBlack(BLACK_OFFSET, freqArray[1]));
+			set7.appendChild(getWhite(WHITE_WIDTH, freqArray[2]));
+			set7.appendChild(getBlack(WHITE_WIDTH + BLACK_OFFSET, freqArray[3]));
+			set7.appendChild(getWhite(2*WHITE_WIDTH, freqArray[4]));
+			set7.appendChild(getBlack(2*WHITE_WIDTH + BLACK_OFFSET, freqArray[5]));
+			set7.appendChild(getWhite(3*WHITE_WIDTH, freqArray[6]));
+			return set7;
+		}
+		var getWhite = function(left, freq){
+			var whiteKey = document.createElement('div');
+			whiteKey.setAttribute('class','white-key');
+			whiteKey.style.width = WHITE_WIDTH + 'px';
+			whiteKey.style.left = left + 'px';
+			if(freq > 0){
+				whiteKey.addEventListener('click', function(e){
+					e.stopPropagation();
+					playFreq(freq);
+				});
+			}
+			return whiteKey;
+		}
+		var getBlack = function(left, freq){
+			var blackKey = document.createElement('div');
+			blackKey.setAttribute('class','black-key');
+			blackKey.style.width = BLACK_WIDTH + 'px';
+			blackKey.style.left = left + 'px';
+			if(freq > 0){
+				blackKey.addEventListener('click', function(e){
+					e.stopPropagation();
+					playFreq(freq);
+				});
+			}
+			return blackKey;
+		}
+		var playFreqNew = function(freq, timeFactor){
+			var factor = 1000/freq;
+			generateSoundNew(factor, timeFactor);
+		};
+		var currentAudio;
+		var isStopped = false;
+
+		var muskurane = [{n:'MT',t:4},{n:'A3',t:2},{n:'B3',t:4},
+			{n:'C4',t:4},{n:'B3',t:4},{n:'B3',t:4},{n:'A3',t:4},
+			{n:'MT',t:4},{n:'A3',t:2},{n:'B3',t:4},
+			{n:'C4',t:4},{n:'A3',t:4},{n:'A3',t:4},{n:'E4',t:4},
+			{n:'D4',t:4},{n:'D4',t:4},{n:'MT',t:4},{n:'C4',t:4},
+			{n:'B3',t:4},{n:'A3',t:4},{n:'B3',t:4},{n:'A3',t:4},
+			{n:'G3',t:2},{n:'MT',t:2},
+			{n:'MT',t:1},
+			{n:'MT',t:4},{n:'G3',t:2},{n:'A3',t:4},
+			{n:'B3',t:4},{n:'A3',t:4},{n:'A3',t:4},{n:'G3',t:4},
+			{n:'MT',t:4},{n:'G3',t:2},{n:'A3',t:4},
+			{n:'B3',t:4},{n:'G3',t:4},{n:'G3',t:4},{n:'D4',t:4},
+			{n:'C4',t:4},{n:'C4',t:4},{n:'MT',t:4},{n:'B3',t:4},
+			{n:'A3',t:4},{n:'G3',t:4},{n:'A3',t:4},{n:'G3',t:4},
+			{n:'F3',t:2},{n:'MT',t:2},
+			{n:'MT',t:2},{n:'A3',t:4},{n:'G#3',t:4},
+			{n:'G#3',t:4},{n:'A3',t:4},{n:'B3',t:4},{n:'G#3',t:4},
+			{n:'A3',t:4},{n:'B3',t:4},{n:'G#3',t:4},{n:'A3',t:4},
+			{n:'B3',t:4},{n:'MT',t:2},{n:'G#3',t:4},
+			{n:'G#3',t:4},{n:'B3',t:2},{n:'A3',t:4},
+			{n:'A3',t:2},{n:'MT',t:1},
+			{n:'A3',t:4},{n:'G#3',t:4},
+			{n:'G#3',t:4},{n:'A3',t:4},{n:'B3',t:4},{n:'G#3',t:4},
+			{n:'A3',t:4},{n:'B3',t:4},{n:'G#3',t:4},{n:'A3',t:4},
+			{n:'B3',t:4},{n:'MT',t:2},{n:'G#3',t:4},
+			{n:'G#3',t:4},{n:'B3',t:2},{n:'A3',t:4},
+			{n:'A3',t:2},{n:'MT',t:1},{n:'MT',t:2},
+
+			{n:'MT',t:4},{n:'A3',t:2},{n:'B3',t:4},
+			{n:'C4',t:4},{n:'B3',t:4},{n:'B3',t:4},{n:'A3',t:4},
+			{n:'MT',t:4},{n:'A3',t:2},{n:'B3',t:4},
+			{n:'C4',t:4},{n:'A3',t:4},{n:'A3',t:4},{n:'E4',t:4},
+			{n:'D4',t:4},{n:'D4',t:4},{n:'MT',t:4},{n:'C4',t:4},
+			{n:'B3',t:4},{n:'A3',t:4},{n:'B3',t:4},{n:'A3',t:4},
+			{n:'G3',t:2},{n:'MT',t:2},
+			{n:'MT',t:1},
+			{n:'MT',t:4},{n:'G3',t:2},{n:'A3',t:4},
+			{n:'B3',t:4},{n:'A3',t:4},{n:'A3',t:4},{n:'G3',t:4},
+			{n:'MT',t:4},{n:'G3',t:2},{n:'A3',t:4},
+			{n:'B3',t:4},{n:'G3',t:4},{n:'G3',t:4},{n:'D4',t:4},
+			{n:'C4',t:4},{n:'C4',t:4},{n:'MT',t:4},{n:'B3',t:4},
+			{n:'A3',t:4},{n:'G3',t:4},{n:'A3',t:4},{n:'G3',t:4},
+			{n:'F3',t:2},{n:'MT',t:2},
+			{n:'MT',t:2},{n:'A3',t:4},{n:'G#3',t:4},
+			{n:'G#3',t:4},{n:'A3',t:4},{n:'B3',t:4},{n:'G#3',t:4},
+			{n:'A3',t:4},{n:'B3',t:4},{n:'G#3',t:4},{n:'A3',t:4},
+			{n:'B3',t:4},{n:'MT',t:2},{n:'G#3',t:4},
+			{n:'G#3',t:4},{n:'B3',t:2},{n:'A3',t:4},
+			{n:'A3',t:2},{n:'MT',t:1},
+			{n:'A3',t:4},{n:'G#3',t:4},
+			{n:'G#3',t:4},{n:'A3',t:4},{n:'B3',t:4},{n:'G#3',t:4},
+			{n:'A3',t:4},{n:'B3',t:4},{n:'G#3',t:4},{n:'A3',t:4},
+			{n:'B3',t:4},{n:'MT',t:2},{n:'G#3',t:4},
+			{n:'G#3',t:4},{n:'B3',t:2},{n:'A3',t:4},
+			{n:'A3',t:2},{n:'MT',t:1},{n:'MT',t:2}];
+		function playArray(array){
+			var freqObj = array.splice(0,1)[0];
+			var freq = freqMap[freqObj.n];
+			var timeFactor = freqObj.t;
+			var callback = null;
+			var duration = 1500/timeFactor;
+			if(!isStopped){
+				setTimeout(function(){
+					if(array.length>0) {
+						playArray(array);
+					}
+					else
+						currentAudio.pause();
+				},duration);
+			}
+			playFreqNew(freq,timeFactor);
+		}
+		function copyNPlay(array){
+			var newArray = array.slice();
+			playArray(newArray);
+		}
+
+	</script>
+	<style>
+		.keyboard-wrap{
+			height:170px;
+		}
+		.keyboard-wrap *{
+			box-sizing:border-box;
+			border:1px solid black;
+		}
+		.white-key{
+			background-color:white;
+			z-index:1;
+			height:100%;
+		}
+		.black-key {
+			background-color:#333333;
+			z-index: 2;
+			height:60%;
+		}
+		.black-key,.white-key{
+			position:absolute;
+			border-radius : 0px 0px 5px 5px;
+			box-shadow: -2px 1px 0px black;
+		}
+		.set5,.set7{
+			display:inline-block;
+			height:100%;
+			position:relative;
+			border:none;
+		}
+		body{
+			font-family: verdana;
+		}
+	</style>
+</head>
+<body>
+	<h1><center>JAM-BUDDY</center></h1>
+	<h3>Select Notes to play randomly</h3>
+	<div id="notes"></div>
+	<div><button id='create'>Create</button>&nbsp;&nbsp;<button id="stop">Stop</button></div>
+	<br />
+	<h3>Play notes on a Keyboard</h3>
+	<div id="keyBoard" class="keyboard-wrap">
+	</div>
+	<br />
+	<h3>Play Song - Live!</h3>
+	<button id="playSong">Play Song Preset</button>
+
+</body>
+</html>
